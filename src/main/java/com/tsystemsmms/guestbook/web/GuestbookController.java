@@ -15,12 +15,16 @@
  */
 package com.tsystemsmms.guestbook.web;
 
+import com.tsystemsmms.guestbook.model.GuestbookEntry;
+import com.tsystemsmms.guestbook.repository.GuestbookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * TODO: Comment
@@ -30,8 +34,13 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class GuestbookController {
 
+  @Autowired
+  private GuestbookRepository guestbookRepository;
+
   @RequestMapping(value = "/guestbook", method = RequestMethod.GET)
   public String show(Model model) {
+
+    model.addAttribute("guestbookItems", guestbookRepository.list());
 
     return "guestbook";
 
@@ -42,6 +51,13 @@ public class GuestbookController {
 
     String name = request.getParameter("name");
     String comment = request.getParameter("comment");
+
+    GuestbookEntry entry = new GuestbookEntry();
+    entry.setName(name);
+    entry.setComment(comment);
+    entry.setDate(new Date());
+
+    guestbookRepository.add(entry);
 
     return "redirect:/guestbook";
   }
